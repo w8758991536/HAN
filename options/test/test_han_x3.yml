@@ -1,0 +1,93 @@
+name: HAN_x3
+model_type: SRModel
+scale: 3
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test_1:  # the 1st test dataset
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: datasets/data/Set5/image_SRF_3/HR
+    dataroot_lq: datasets/data/Set5/image_SRF_3/LR
+    io_backend:
+      type: disk
+  test_2:  # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: datasets/data/Set14/image_SRF_3/HR
+    dataroot_lq: datasets/data/Set14/image_SRF_3/LR
+    io_backend:
+      type: disk
+
+  test_3:
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: datasets/data/BSD100/image_SRF_3/HR
+    dataroot_lq: datasets/data/BSD100/image_SRF_3/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_4:
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: datasets/data/Urban100/image_SRF_3/HR
+    dataroot_lq: datasets/data/Urban100/image_SRF_3/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_5:
+    name: manga109
+    type: PairedImageDataset
+    dataroot_gt: datasets/data/Manga109/image_SRF_3/HR
+    dataroot_lq: datasets/data/Manga109/image_SRF_3/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  depths:
+  - 6
+  - 6
+  - 6
+  - 6
+  embed_dim: 60
+  img_range: 1.0
+  img_size: 64
+  in_chans: 3
+  mlp_ratio: 2
+  num_heads:
+  - 3
+  - 3
+  - 3
+  - 3
+  resi_connection: 1conv
+  type: HAN
+  upsampler: pixelshuffledirect
+  upscale: 3
+  window_size:
+  - 16
+  - 16
+# path
+path:
+  pretrain_network_g: experiments/train036_k3_w16x16_SRx3_scratch/models/net_g_430000.pth
+  strict_load_g: true
+#  param_key_g: params_ema
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true
